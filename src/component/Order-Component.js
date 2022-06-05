@@ -25,25 +25,28 @@ class OrderComponent extends React.Component{
                     <thead>
                         <tr>
                             <td>OID</td>
-                            <td>CID</td>
+                            <td>CID</td>    
                             <td>Order Details</td>
                             <td>Due Date</td>
                             <td>Taken By</td>
                             <td>Assigned To</td>
                             <td>Status</td>
+                            <td>Notes</td>
                         </tr>
                     </thead>
                     <tbody>
                         {
                             this.state.orders.map(
-                                order =>
+                                order =>                                    
                                 <tr key= {order.id}>
+                                    <td> {order.id}</td>
                                     <td> {order.customerId}</td>
                                     <td> {order.orderDetails}</td>
                                     <td> {order.dueDate}</td>
                                     <td> {order.orderTakenBy}</td>
                                     <td> {order.assignedTo}</td>
                                     <td> {order.status}</td>
+                                    <td> {order.notes}</td>
                                 </tr>
                             )
                         }

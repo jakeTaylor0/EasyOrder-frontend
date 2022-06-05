@@ -26,6 +26,7 @@ class CustomerComponent extends React.Component{
                         <tr>
                             <td>CID</td>
                             <td>Name</td>
+                            <td>Phone</td>
                             <td>Email</td>
                         </tr>
                     </thead>
@@ -36,7 +37,7 @@ class CustomerComponent extends React.Component{
                                 <tr key= {customer.id}>
                                     <td> {customer.id}</td>
                                     <td> {customer.name}</td>
-                                    <td> {customer.email}</td>
+                                    <td> {customer.phone}</td>
                                 </tr>
                             )
                         }
