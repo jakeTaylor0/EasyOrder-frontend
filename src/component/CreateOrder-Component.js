@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import OrderServices from "../service/Order-Services";
 import CustomerServices from "../service/Customer-Services";
 import userEvent from "@testing-library/user-event";
-
+import OrderHistoryComponent from "./OrderHistory-Component";
 const CreateOrderComponent = () => {
 
     const [order, setOrder] = useState('');
@@ -12,7 +12,7 @@ const CreateOrderComponent = () => {
     const [customerName, setCustomerName] = useState('');
     const [orderDueDate, setOrderDueDate] = useState('');
     const [orderDetails, setOrderDetails] = useState('');
-    const [orderHistory, setOrderHistory] = useState('');
+    const [orderHistory, setOrderHistory] = useState([]);
 
     const [disabledOH, setDisabledOH] = useState(true);
 
@@ -41,6 +41,7 @@ const CreateOrderComponent = () => {
         OrderServices.getOrderHistory(customerId).then((res) => {
             if(res.data.responseData.length > 0){
                 console.log(res.data.responseData);
+                setOrderHistory(res.data.responseData);
             }
             else
                 console.log("No order history found for customer")
@@ -103,6 +104,10 @@ const CreateOrderComponent = () => {
                     text={'Place Order'}
                     onClick={(e) => placeOrder()}
                     isDisabled={false}
+                />
+
+                <OrderHistoryComponent
+                    orderHistory={orderHistory}
                 />
         </div>
     )
