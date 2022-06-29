@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import CustomerComponent from './component/Customer-Component';
 import OrderComponent from './component/Order-Component';
@@ -10,7 +9,9 @@ import CreateOrder from './component/CreateOrder-Component';
 function App() {
   return(
     <div className="app">
-      <CreateOrder/>
+      <div><CreateOrder/></div>
+
+      
     </div>
   );
 }
