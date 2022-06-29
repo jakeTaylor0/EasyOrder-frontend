@@ -49,7 +49,7 @@ const CreateOrderComponent = () => {
     }
 
     const placeOrder = () =>{
-        const order = {customerId: customerId, orderDetails: '', dueDate: '', orderTakenBy: '', assingedTo: '', status:'NEW'};
+        const order = {customerId: customerId, orderDetails: orderDetails, dueDate: orderDueDate, orderTakenBy: '', assingedTo: '', status:'NEW'};
 
         
         OrderServices.addOrder(order).then((res) =>{
@@ -66,7 +66,7 @@ const CreateOrderComponent = () => {
                     <input 
                         type="text"
                         required
-                        placeholder="Customer Phone #"
+                        placeholder="Phone"
                         value={customerPhone}
                         onChange={(e) => {
                             setCustomerPhone(e.target.value);
@@ -85,11 +85,32 @@ const CreateOrderComponent = () => {
                     <input 
                         type="text"
                         required
-                        placeholder="Customer Name"
+                        placeholder="Name"
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
                     />
-                    
+
+                    <label>Pickup Date:</label>
+                        <input 
+                            type="date" 
+                            id="start" 
+                            required
+                            name="trip-start"
+                            value = {orderDueDate}
+                            onChange={(e) => setOrderDueDate(e.target.value)}  
+                            //min="2018-01-01" max="2018-12-31"
+                        />
+                </div>
+
+                <div>
+                    <textarea name="orderDetails"
+                        type="textarea"
+                        required
+                        id="itemList"
+                        value={orderDetails}
+                        onChange={(e) => setOrderDetails(e.target.value)}
+                    >
+                    </textarea>
                 </div>
 
                 <Button 
@@ -105,7 +126,6 @@ const CreateOrderComponent = () => {
                     onClick={(e) => placeOrder()}
                     isDisabled={false}
                 />
-
                 <OrderHistoryComponent
                     orderHistory={orderHistory}
                 />

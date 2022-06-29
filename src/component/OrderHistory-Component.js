@@ -7,14 +7,18 @@ import Order from "./Order";
 const OrderHistoryComponent = ({orderHistory}) => {
 
     return(
-        <div>
-            {orderHistory.map((order, index) => (
-                <Order 
-                    key={index} 
-                    order={order}
-                />
-            ))}
-        </div>
+        <table className="table table-striped">
+            <div>
+                {orderHistory.map((order) => (
+                        <tr key={order.orderId}>
+                            <td>{order.orderId}</td>
+                            <td>{order.dueDate}</td>
+                            <td>{order.orderDetails}</td>
+                        </tr>
+                   
+                ))}
+            </div>
+        </table>
     )
     
 }

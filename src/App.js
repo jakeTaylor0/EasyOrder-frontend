@@ -10,8 +10,6 @@ function App() {
   return(
     <div className="app">
       <div><CreateOrder/></div>
-
-      
     </div>
   );
 }

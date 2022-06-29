@@ -4,6 +4,7 @@ const Order = ({order}) => {
             {order.orderId}
             {order.orderDetails}
             {order.orderTakenTime}
+            {order.dueDate}
         </div>
     )
 }
