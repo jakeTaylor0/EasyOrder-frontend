@@ -12,7 +12,7 @@ class OrderComponent extends React.Component{
 
     // calls the rest endpoint
     componentDidMount(){
-        OrderServices.getOrders().then((res) => {
+        OrderServices.getAllOrders().then((res) => {
             this.setState({orders: res.data})
         });
     }
@@ -24,33 +24,33 @@ class OrderComponent extends React.Component{
                 <table className="table table-striped">
                     <thead>
                         <tr>
-                            <td>OID</td>
-                            <td>CID</td>    
+                            <td>Order #</td>
+                            <td>Assigned To</td>    
+                            <td>Customer Id</td>
                             <td>Order Details</td>
-                            <td>Due Date</td>
                             <td>Taken By</td>
-                            <td>Assigned To</td>
+                            <td>Taken Time</td>
                             <td>Status</td>
-                            <td>Notes</td>
                         </tr>
                     </thead>
+
                     <tbody>
                         {
                             this.state.orders.map(
                                 order =>                                    
-                                <tr key= {order.id}>
-                                    <td> {order.id}</td>
+                                <tr key= {order.orderId}>
+                                    <td> {order.orderId}</td>
+                                    <td> {order.assignedTo}</td>
                                     <td> {order.customerId}</td>
                                     <td> {order.orderDetails}</td>
-                                    <td> {order.dueDate}</td>
                                     <td> {order.orderTakenBy}</td>
-                                    <td> {order.assignedTo}</td>
+                                    <td> {order.orderTakenTime}</td>
                                     <td> {order.status}</td>
-                                    <td> {order.notes}</td>
                                 </tr>
                             )
                         }
                     </tbody>
+
                 </table>
             </div>
         )

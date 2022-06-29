@@ -1,108 +1,112 @@
-import { useState } from "react";
+import Button from "./Button";
+import React, { useState } from "react";
+import OrderServices from "../service/Order-Services";
+import CustomerServices from "../service/Customer-Services";
+import userEvent from "@testing-library/user-event";
 
-const CreateOrder = () => {
-    const [customerId, setCustomerId] = useState('');
-    const [phone, setPhone] = useState('');
-    const [name, setName] = useState('');
+const CreateOrderComponent = () => {
+
     const [order, setOrder] = useState('');
-    const [date, setDate] = useState('');
-    const orderDetails = [];
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const customer = {phone, name};
+    const [customerId, setCustomerId] = useState('');
+    const [customerPhone, setCustomerPhone] = useState('');
+    const [customerName, setCustomerName] = useState('');
+    const [orderDueDate, setOrderDueDate] = useState('');
+    const [orderDetails, setOrderDetails] = useState('');
+    const [orderHistory, setOrderHistory] = useState('');
+
+    const [disabledOH, setDisabledOH] = useState(true);
+
+    const customerSearch = (phone) => {
+        CustomerServices.getCustomersByPhone(phone).then((res) => {
+            console.log(res.data.responseData);
+            if(res.data.responseCode !== '404'){
+                setCustomerId(res.data.responseData.customerId);
+                setCustomerName(res.data.responseData.name);
+
+                OrderServices.getOrderHistory(res.data.responseData.customerId).then((res) => {
+                    if(res.data.responseData.length > 0)
+                        setDisabledOH(false);
+                    else
+                        setDisabledOH(true);
+                });
+            }
+
+            else
+                console.log("No customer data found for phone");
+            
+        });
+    }
+
+    const getOrderHistory = () => {
+        OrderServices.getOrderHistory(customerId).then((res) => {
+            if(res.data.responseData.length > 0){
+                console.log(res.data.responseData);
+            }
+            else
+                console.log("No order history found for customer")
+        });
+    }
+
+    const placeOrder = () =>{
+        const order = {customerId: customerId, orderDetails: '', dueDate: '', orderTakenBy: '', assingedTo: '', status:'NEW'};
+
         
-    }
-    //setDate(new Date(this).getDate())
-    const serachForCustomerByPhone = (e) => {
-        fetch('http://localhost:8080/customer-services/getCustomerByPhone?phone=' + e, {
-            method: 'GET',
-            headers: { "Content-Type": "application/json" }
-            }).then(response => response.json())
-            .then(data => {
-                if(data != "No data found."){
-                    setCustomerId(data.customerId);
-                    setName(data.name);
-                    console.log("Customer Data Retrieved: " + data.name)
-                }
-                else
-                    console.log("No data found for phone number: " + e);
-           
+        OrderServices.addOrder(order).then((res) =>{
+            console.log(res.data)
+                
         });
     }
-
-    const orderHistory = (e) => {
-        fetch('http://localhost:8080/order-services/orderHistory?customerId=' + customerId, {
-            method: 'GET',
-            headers: { "Content-Type": "application/json" }
-            }).then(response => response.json())
-            .then(data => {
-                if(data != "No data found."){
-                    console.log("Order History Retrieved")
-                    console.log(data);
-                }
-                else
-                    console.log("No data found for customer id: " + e);
-           
-        });
-    }
-
-    const itemList = [];
-    const input = (e) =>{
-        itemList.push(e)
-        document.forms.order.orderDetails.value += e+"\n";
-    }
-  
-    return (
-        <div id="creatOrder">
+    return(
+        <div>
             <h1>Create Order</h1>
-                <form name = "order">
-                    <div id="customerDetails">
-                        <label>Phone:</label>
-                            <input 
-                                type="text"
-                                required
-                                placeholder="Customer Phone #"
-                                value={phone}
-                                onChange={(e) => {
-                                    setPhone(e.target.value);
-                                    if(e.target.value.length == 10)
-                                        serachForCustomerByPhone(e.target.value);
-                                    else
-                                        setName('');
-                                }}
-                            />
-                
-                        <label>Name:</label>
-                            <input 
-                                type="text"
-                                required
-                                placeholder="Customer Name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                            />
-                        <button type="button" onClick={(e) => orderHistory(customerId)}>Order History</button>
+                <div id="customerDetails">
 
-                        <label>Pickup Date:</label>
-                            <input 
-                                type="date" 
-                                id="start" 
-                                name="trip-start"
-                                value = {date}
-                                   
-                                //min="2018-01-01" max="2018-12-31"
-                            />
-                    </div>
-                    <div>
+                    <label>Phone:</label>
+                    <input 
+                        type="text"
+                        required
+                        placeholder="Customer Phone #"
+                        value={customerPhone}
+                        onChange={(e) => {
+                            setCustomerPhone(e.target.value);
+                            if(e.target.value.length === 10)
+                                customerSearch(e.target.value);
+                            else{
+                                setCustomerId('');
+                                setCustomerName('');
+                                setDisabledOH(true);
+                            }
+                                    
+                        }}
+                    />
 
-                    </div>
-                    <div>
-                        <textarea name="orderDetails"></textarea>
-                    </div>
-                
+                    <label>Name:</label>
+                    <input 
+                        type="text"
+                        required
+                        placeholder="Customer Name"
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value)}
+                    />
+                    
+                </div>
 
-                <button type="submit">Place Order</button>
-            </form>
+                <Button 
+                    bgColor={'red'}
+                    text={'Order History'}
+                    onClick={(e) => getOrderHistory()}
+                    isDisabled={disabledOH}
+                />
+
+                <Button 
+                    bgColor={'red'}
+                    text={'Place Order'}
+                    onClick={(e) => placeOrder()}
+                    isDisabled={false}
+                />
         </div>
-    );
+    )
+    
 }
-export default CreateOrder;
+
+export default CreateOrderComponent;
