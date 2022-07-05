@@ -5,13 +5,23 @@ const customer_getCustomerByPhone_uri = 'http://localhost:8080/customer-services
 const customer_saveCustomer_uri = 'http://localhost:8080/customer-services/saveCustomer'
 class CustomerServices{
 
-    getCustomers(){
+   getCustomers(){
        return axios.get(customer_getAllCustomers_uri);
-    }
+   }
 
-    getCustomersByPhone(phone){
+   getCustomersByPhone(phone){
         return axios.get(customer_getCustomerByPhone_uri + phone);
-     }
+   }
+
+   saveCustomer(customer){
+      return axios({
+         method: 'POST',
+         url: customer_saveCustomer_uri,
+         data: customer
+     });
+   }
+
+
 }
 
 export default new CustomerServices()

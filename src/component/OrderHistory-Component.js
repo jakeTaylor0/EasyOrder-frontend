@@ -7,18 +7,28 @@ import Order from "./Order";
 const OrderHistoryComponent = ({orderHistory}) => {
 
     return(
-        <table className="table table-striped">
-            <div>
-                {orderHistory.map((order) => (
+        <div>
+            <table className="table">
+                <thead>
+                    <tr>
+                        <td>Order #</td>
+                        <td>Due Date</td>
+                        <td>Order Details</td>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {orderHistory.map((order) => (
                         <tr key={order.orderId}>
                             <td>{order.orderId}</td>
                             <td>{order.dueDate}</td>
                             <td>{order.orderDetails}</td>
                         </tr>
-                   
-                ))}
-            </div>
-        </table>
+                    ))}
+                </tbody>
+      
+            </table>
+        </div>
     )
     
 }
