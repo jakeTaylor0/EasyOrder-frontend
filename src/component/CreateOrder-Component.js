@@ -9,7 +9,7 @@ import OrderHistoryComponent from "./OrderHistory-Component";
 const CreateOrderComponent = () => {
 
     const [order, setOrder] = useState('');
-    const [customerId, setCustomerId] = useState(0);
+    const [customerId, setCustomerId] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
     const [customerName, setCustomerName] = useState('');
     const [orderDueDate, setOrderDueDate] = useState('');
@@ -31,13 +31,14 @@ const CreateOrderComponent = () => {
                         console.log("Order history found for customer.");
                         setDisabledOH(false);
                     }
-                    else
+                    else{
+                        console.log("Order history not found for customer.");
                         setDisabledOH(true);
+                    }
                 });
             }
-
             else
-                console.log("No customer data found for phone.");
+                console.log("Customer not found.");
             
         });
     }
@@ -51,45 +52,48 @@ const CreateOrderComponent = () => {
                 console.log("No order history found for customer.")
         });
     }
-    
-    const saveCustomer = () => {
-        const customer = {name: customerName, phone: customerPhone};
-        CustomerServices.saveCustomer(customer).then((res) => {
-            console.log("Customer info saved with id: " + res.data.responseData.customerId);
-            return res.data.responseData.customerId;
-        });
-    }
-    const placeOrder = () =>{
-        var cid = 0;
-        if(customerExsists === true){
-            CustomerServices.getCustomersByPhone(customerPhone).then((res) => {
-                if(res.data.responseData !== null){
-                    if(customerName !== res.data.responseData.name){
-                       const customer = {name: customerName, phone: customerPhone};
-                       CustomerServices.saveCustomer(customer).then((res) => {
-                            setCustomerId(res.data.responseData.customerId);
-                            cid = res.data.responseData.customerId;
-                            console.log("Customer with id: " + res.data.responseData.customerId + " updated.");
-                        });
-                    }
-                }
 
+    const placeOrder = () => {
+        // check to see if customer exsists
+        if(customerExsists === false){
+            // save customer
+            const customer = {name: customerName, phone: customerPhone};
+            CustomerServices.saveCustomer(customer).then((res) => {
+                console.log("New customer details saved.");
+                
+                // save order
+                const order = {customerId: res.data.responseData.customerId, orderDetails: orderDetails, dueDate: orderDueDate, orderTakenBy: "", assignedTo: "", status: "NEW"};
+                OrderServices.addOrder(order).then((res2) => {
+                    console.log("Order saved.");
+                });
             });
         }
         else{
-            const customer = {name: customerName, phone: customerPhone};
-            CustomerServices.saveCustomer(customer).then((res) => {
-                console.log("New customer saved with id: " + res.data.responseData.customerId + ".")
-                setCustomerId(res.data.responseData.customerId);
-                cid = res.data.responseData.customerId;
-             });
-        }
-        console.log(cid);
-        const order = {customerId: cid, orderDetails: orderDetails, dueDate: orderDueDate, orderTakenBy: '', assingedTo: '', status:'NEW'};
-        OrderServices.addOrder(order).then((res) =>{
-            console.log("Order Saved Successfully.")
-                
-        });
+            // check if customer's name has been updated
+            CustomerServices.getCustomers(customerPhone).then((res1) => {
+                if(customerName !== res1.data.responseData.name){ 
+                    // update customer
+                    const customer = {name: customerName, phone: customerPhone};
+                    CustomerServices.saveCustomer(customer).then((res2) => {
+                        console.log("Customer name updated.");
+
+                        // save order
+                        const order = {customerId: res2.data.responseData.customerId, orderDetails: orderDetails, dueDate: orderDueDate, orderTakenBy: "", assignedTo: "", status: "NEW"};
+                        OrderServices.addOrder(order).then((res3) => {
+                            console.log("Order saved.");
+                        });
+                    });
+                }
+                else{
+                    // customer exsists and no changes to name were made
+                    // save order
+                    const order = {customerId: customerId, orderDetails: orderDetails, dueDate: orderDueDate, orderTakenBy: "", assignedTo: "", status: "NEW"};
+                        OrderServices.addOrder(order).then((res3) => {
+                            console.log("Order saved.");
+                        });
+                }
+            });
+        } 
     }
     return(
         <div>
@@ -100,17 +104,15 @@ const CreateOrderComponent = () => {
                         <label>Phone:</label>
                         <PhoneInput 
                             country={'us'}
-                            //id="phone"
+                            id="phone"
                             required
-                            //placeholder="Phone"
                             value={customerPhone}
                             onChange={(e) => {
-                                //console.log(e);
                                 setCustomerPhone(e);
                                 if(e.length >= 11)
                                     customerSearch(e);
                                 else{
-                                    setCustomerId(0);
+                                    setCustomerId('');
                                     setCustomerName('');
                                     setDisabledOH(true);
                                 }
@@ -166,11 +168,6 @@ const CreateOrderComponent = () => {
                     </div>
                 </div>
 
-                
-               
-       
-
-
                 <Button 
                     bgColor={'red'}
                     text={'Place Order'}
@@ -183,7 +180,6 @@ const CreateOrderComponent = () => {
                 />
         </div>
     )
-    
 }
 
 export default CreateOrderComponent;
