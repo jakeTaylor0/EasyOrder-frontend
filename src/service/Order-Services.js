@@ -14,7 +14,6 @@ class OrderServices{
     }
 
     addOrder(order){
-        console.log(JSON.stringify(order))
         return axios({
             method: 'POST',
             url: order_addOrder_uri,
