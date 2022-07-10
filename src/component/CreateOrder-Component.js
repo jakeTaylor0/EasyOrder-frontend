@@ -8,7 +8,7 @@ import 'react-phone-input-2/lib/style.css';
 import OrderHistoryComponent from "./OrderHistory-Component";
 const CreateOrderComponent = () => {
 
-    const [order, setOrder] = useState('');
+    const [order, setOrder] = useState([]);
     const [customerId, setCustomerId] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
     const [customerName, setCustomerName] = useState('');
@@ -62,7 +62,7 @@ const CreateOrderComponent = () => {
                 console.log("New customer details saved.");
                 
                 // save order
-                const order = {customerId: res.data.responseData.customerId, orderDetails: orderDetails, dueDate: orderDueDate, orderTakenBy: "", assignedTo: "", status: "NEW"};
+                const order = {customerId: res.data.responseData.customerId, orderDetails: orderDetails, dueDate: orderDueDate + "T" + orderDueTime, orderTakenBy: "", assignedTo: "", status: "NEW"};
                 OrderServices.addOrder(order).then((res2) => {
                     console.log("Order saved.");
                 });
@@ -70,7 +70,7 @@ const CreateOrderComponent = () => {
         }
         else{
             // check if customer's name has been updated
-            CustomerServices.getCustomers(customerPhone).then((res1) => {
+            CustomerServices.getCustomersByPhone(customerPhone).then((res1) => {
                 if(customerName !== res1.data.responseData.name){ 
                     // update customer
                     const customer = {name: customerName, phone: customerPhone};
@@ -78,7 +78,7 @@ const CreateOrderComponent = () => {
                         console.log("Customer name updated.");
 
                         // save order
-                        const order = {customerId: res2.data.responseData.customerId, orderDetails: orderDetails, dueDate: orderDueDate, orderTakenBy: "", assignedTo: "", status: "NEW"};
+                        const order = {customerId: res2.data.responseData.customerId, orderDetails: orderDetails, dueDate: orderDueDate + "T" + orderDueTime, orderTakenBy: "", assignedTo: "", status: "NEW"};
                         OrderServices.addOrder(order).then((res3) => {
                             console.log("Order saved.");
                         });
@@ -87,7 +87,7 @@ const CreateOrderComponent = () => {
                 else{
                     // customer exsists and no changes to name were made
                     // save order
-                    const order = {customerId: customerId, orderDetails: orderDetails, dueDate: orderDueDate, orderTakenBy: "", assignedTo: "", status: "NEW"};
+                    const order = {customerId: customerId, orderDetails: orderDetails, dueDate: orderDueDate + "T" + orderDueTime, orderTakenBy: "", assignedTo: "", status: "NEW"};
                         OrderServices.addOrder(order).then((res3) => {
                             console.log("Order saved.");
                         });
@@ -100,7 +100,7 @@ const CreateOrderComponent = () => {
             
                 <div id="placeOrder" style={{borderColor:"#D3D3D3", borderStyle:"solid", borderRadius:"4px"}}>
                     <h1>Create Order</h1>
-                    <div style={{float:"left"}}>
+                    <div style={{flexDirection: 'column'}}>
                         <label>Phone:</label>
                         <PhoneInput 
                             country={'us'}
@@ -109,6 +109,7 @@ const CreateOrderComponent = () => {
                             value={customerPhone}
                             onChange={(e) => {
                                 setCustomerPhone(e);
+
                                 if(e.length >= 11)
                                     customerSearch(e);
                                 else{
@@ -119,7 +120,7 @@ const CreateOrderComponent = () => {
                             }}
                         />
                     </div>
-                    
+                    <div style={{float:"none"}}>
                     <label>Name:</label>
                     <input 
                         type="text"
@@ -129,6 +130,8 @@ const CreateOrderComponent = () => {
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
                     />
+                    </div>
+                    
                     <div style={{float:"left"}}>
                         <label>Pickup Date:</label>
                             <input 
@@ -150,6 +153,7 @@ const CreateOrderComponent = () => {
                         onChange={(e) => setOrderDueTime(e.target.value)}
 
                     />
+                    
                     <textarea name="orderDetails"
                         type="textarea"
                         required
@@ -157,8 +161,7 @@ const CreateOrderComponent = () => {
                         value={orderDetails}
                         onChange={(e) => setOrderDetails(e.target.value)}
                     />
-
-                    <div style={{float:"left"}}>
+                    <div style={{flexDirection: 'column'}}>
                         <Button 
                             bgColor={'red'}
                             text={'Order History'}
